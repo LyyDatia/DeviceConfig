@@ -1,0 +1,6 @@
+^E:\DEVICECONFIG\DEVICECONFIG\DEVICECONFIG.H
+"D:\Qt\4.8.2_64\bin\moc.exe"  "E:\DeviceConfig\DeviceConfig\deviceconfig.h" -o ".\GeneratedFiles\Release\moc_deviceconfig.cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB  "-I.\GeneratedFiles" "-I." "-ID:\Qt\4.8.2_64\include" "-I.\GeneratedFiles\Release\." "-ID:\Qt\4.8.2_64\include\QtCore" "-ID:\Qt\4.8.2_64\include\QtGui" "-ID:\Qt\4.8.2_64\include\QtWidgets"
+^E:\DEVICECONFIG\DEVICECONFIG\DEVICECONFIG.UI
+"D:\Qt\4.8.2_64\bin\uic.exe" -o ".\GeneratedFiles\ui_deviceconfig.h" "E:\DeviceConfig\DeviceConfig\deviceconfig.ui"
+^E:\DEVICECONFIG\DEVICECONFIG\DEVICECONFIG.QRC
+"D:\Qt\4.8.2_64\bin\rcc.exe" -name "deviceconfig" -no-compress "E:\DeviceConfig\DeviceConfig\deviceconfig.qrc" -o .\GeneratedFiles\qrc_deviceconfig.cpp

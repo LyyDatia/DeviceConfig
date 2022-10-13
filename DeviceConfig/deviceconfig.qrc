@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/DeviceConfig">
+        <file>Resources/LOGO.ico</file>
+    </qresource>
+</RCC>
