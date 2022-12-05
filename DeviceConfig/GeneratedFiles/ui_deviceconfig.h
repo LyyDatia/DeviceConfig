@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'deviceconfig.ui'
 **
-** Created: Fri Sep 30 10:47:11 2022
+** Created: Wed Nov 30 15:57:26 2022
 **      by: Qt User Interface Compiler version 4.8.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -34,8 +34,6 @@ QT_BEGIN_NAMESPACE
 class Ui_UIDevicesConfig
 {
 public:
-    QWidget *layoutWidget;
-    QVBoxLayout *verticalLayout_6;
     QTabWidget *tabWidget;
     QWidget *tabSysSet;
     QVBoxLayout *verticalLayout_5;
@@ -136,9 +134,9 @@ public:
     QComboBox *cbxCameraType;
     QHBoxLayout *horizontalLayout_11;
     QLabel *label_10;
-    QLineEdit *ledtInitFileName;
+    QComboBox *Cb_CameraParm;
     QPushButton *pushButton;
-    QPushButton *pushButton_5;
+    QPushButton *Pb_Sync;
     QHBoxLayout *horizontalLayout_12;
     QLabel *label_9;
     QLineEdit *ledtDevMark;
@@ -147,6 +145,7 @@ public:
     QComboBox *cbxCameraType_2;
     QSpacerItem *horizontalSpacer_2;
     QPushButton *btnioSave;
+    QWidget *layoutWidget;
     QHBoxLayout *horizontalLayout;
     QPushButton *btnRead;
     QPushButton *btnFalut;
@@ -158,22 +157,15 @@ public:
             UIDevicesConfig->setObjectName(QString::fromUtf8("UIDevicesConfig"));
         UIDevicesConfig->setWindowModality(Qt::ApplicationModal);
         UIDevicesConfig->setEnabled(true);
-        UIDevicesConfig->resize(600, 536);
+        UIDevicesConfig->resize(550, 550);
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(UIDevicesConfig->sizePolicy().hasHeightForWidth());
         UIDevicesConfig->setSizePolicy(sizePolicy);
-        layoutWidget = new QWidget(UIDevicesConfig);
-        layoutWidget->setObjectName(QString::fromUtf8("layoutWidget"));
-        layoutWidget->setGeometry(QRect(9, 9, 582, 518));
-        verticalLayout_6 = new QVBoxLayout(layoutWidget);
-        verticalLayout_6->setSpacing(5);
-        verticalLayout_6->setContentsMargins(5, 5, 5, 5);
-        verticalLayout_6->setObjectName(QString::fromUtf8("verticalLayout_6"));
-        verticalLayout_6->setContentsMargins(0, 0, 0, 0);
-        tabWidget = new QTabWidget(layoutWidget);
+        tabWidget = new QTabWidget(UIDevicesConfig);
         tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
+        tabWidget->setGeometry(QRect(9, 9, 532, 501));
         tabWidget->setMinimumSize(QSize(350, 350));
         tabWidget->setStyleSheet(QString::fromUtf8(""));
         tabSysSet = new QWidget();
@@ -572,6 +564,7 @@ public:
         horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
         label_8 = new QLabel(frame);
         label_8->setObjectName(QString::fromUtf8("label_8"));
+        label_8->setStyleSheet(QString::fromUtf8(""));
 
         horizontalLayout_3->addWidget(label_8);
 
@@ -721,13 +714,14 @@ public:
         horizontalLayout_11->setObjectName(QString::fromUtf8("horizontalLayout_11"));
         label_10 = new QLabel(frame);
         label_10->setObjectName(QString::fromUtf8("label_10"));
+        label_10->setMaximumSize(QSize(80, 16777215));
 
         horizontalLayout_11->addWidget(label_10);
 
-        ledtInitFileName = new QLineEdit(frame);
-        ledtInitFileName->setObjectName(QString::fromUtf8("ledtInitFileName"));
+        Cb_CameraParm = new QComboBox(frame);
+        Cb_CameraParm->setObjectName(QString::fromUtf8("Cb_CameraParm"));
 
-        horizontalLayout_11->addWidget(ledtInitFileName);
+        horizontalLayout_11->addWidget(Cb_CameraParm);
 
         pushButton = new QPushButton(frame);
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
@@ -736,12 +730,12 @@ public:
 
         horizontalLayout_11->addWidget(pushButton);
 
-        pushButton_5 = new QPushButton(frame);
-        pushButton_5->setObjectName(QString::fromUtf8("pushButton_5"));
-        pushButton_5->setMinimumSize(QSize(40, 20));
-        pushButton_5->setMaximumSize(QSize(40, 20));
+        Pb_Sync = new QPushButton(frame);
+        Pb_Sync->setObjectName(QString::fromUtf8("Pb_Sync"));
+        Pb_Sync->setMinimumSize(QSize(40, 20));
+        Pb_Sync->setMaximumSize(QSize(40, 20));
 
-        horizontalLayout_11->addWidget(pushButton_5);
+        horizontalLayout_11->addWidget(Pb_Sync);
 
 
         verticalLayout->addLayout(horizontalLayout_11);
@@ -799,11 +793,12 @@ public:
         verticalLayout_2->addLayout(horizontalLayout_15);
 
         tabWidget->addTab(tabDevices, QString());
-
-        verticalLayout_6->addWidget(tabWidget);
-
-        horizontalLayout = new QHBoxLayout();
+        layoutWidget = new QWidget(UIDevicesConfig);
+        layoutWidget->setObjectName(QString::fromUtf8("layoutWidget"));
+        layoutWidget->setGeometry(QRect(9, 516, 531, 25));
+        horizontalLayout = new QHBoxLayout(layoutWidget);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        horizontalLayout->setContentsMargins(0, 0, 0, 0);
         btnRead = new QPushButton(layoutWidget);
         btnRead->setObjectName(QString::fromUtf8("btnRead"));
 
@@ -819,9 +814,6 @@ public:
         btnExport->setEnabled(true);
 
         horizontalLayout->addWidget(btnExport);
-
-
-        verticalLayout_6->addLayout(horizontalLayout);
 
 
         retranslateUi(UIDevicesConfig);
@@ -895,9 +887,8 @@ public:
          << QApplication::translate("UIDevicesConfig", "AVT", 0, QApplication::UnicodeUTF8)
         );
         label_10->setText(QApplication::translate("UIDevicesConfig", "Init File:", 0, QApplication::UnicodeUTF8));
-        ledtInitFileName->setText(QString());
         pushButton->setText(QApplication::translate("UIDevicesConfig", "...", 0, QApplication::UnicodeUTF8));
-        pushButton_5->setText(QApplication::translate("UIDevicesConfig", "\345\220\214\346\255\245", 0, QApplication::UnicodeUTF8));
+        Pb_Sync->setText(QApplication::translate("UIDevicesConfig", "Sync", 0, QApplication::UnicodeUTF8));
         label_9->setText(QApplication::translate("UIDevicesConfig", "Device Mark:", 0, QApplication::UnicodeUTF8));
         ledtDevMark->setText(QString());
         label_24->setText(QApplication::translate("UIDevicesConfig", "Iamge Type:", 0, QApplication::UnicodeUTF8));

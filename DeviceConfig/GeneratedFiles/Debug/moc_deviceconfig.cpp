@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'deviceconfig.h'
 **
-** Created: Thu Sep 22 14:11:28 2022
+** Created: Tue Nov 22 09:39:18 2022
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.2)
 **
 ** WARNING! All changes made in this file will be lost!
@@ -37,11 +37,11 @@ static const uint qt_meta_data_DeviceConfig[] = {
       78,   13,   13,   13, 0x0a,
       93,   13,   13,   13, 0x0a,
      121,   13,   13,   13, 0x0a,
-     151,   13,   13,   13, 0x0a,
-     172,   13,   13,   13, 0x0a,
-     191,   13,   13,   13, 0x0a,
-     210,   13,   13,   13, 0x0a,
-     225,   13,   13,   13, 0x0a,
+     145,   13,   13,   13, 0x0a,
+     164,   13,   13,   13, 0x0a,
+     183,   13,   13,   13, 0x0a,
+     202,   13,   13,   13, 0x0a,
+     217,   13,   13,   13, 0x0a,
 
        0        // eod
 };
@@ -50,10 +50,9 @@ static const char qt_meta_stringdata_DeviceConfig[] = {
     "DeviceConfig\0\0slots_SaveMode3Changed(int)\0"
     "slots_addKicklist()\0slots_defalut()\0"
     "slots_Export()\0slots_showCameraIOInfo(int)\0"
-    "slots_ChangeCameraIOData(int)\0"
-    "slots_CameraioSave()\0slots_ReadConfig()\0"
-    "slots_GetIniPath()\0slots_SetAll()\0"
-    "slots_Lock(int)\0"
+    "slots_ChangeCamera(int)\0slots_CameraSave()\0"
+    "slots_ReadConfig()\0slots_GetIniPath()\0"
+    "slots_SetAll()\0slots_Lock(int)\0"
 };
 
 void DeviceConfig::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
@@ -67,8 +66,8 @@ void DeviceConfig::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
         case 2: _t->slots_defalut(); break;
         case 3: _t->slots_Export(); break;
         case 4: _t->slots_showCameraIOInfo((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 5: _t->slots_ChangeCameraIOData((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 6: _t->slots_CameraioSave(); break;
+        case 5: _t->slots_ChangeCamera((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 6: _t->slots_CameraSave(); break;
         case 7: _t->slots_ReadConfig(); break;
         case 8: _t->slots_GetIniPath(); break;
         case 9: _t->slots_SetAll(); break;

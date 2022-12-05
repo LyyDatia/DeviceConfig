@@ -5,16 +5,25 @@ DeviceConfig::DeviceConfig(QWidget *parent)
 {
     ui.setupUi(this);
 	//nCurrentCamIO=0;
-	qDebug()<<QCoreApplication::applicationDirPath();
+	//qDebug()<<QCoreApplication::applicationDirPath();
 	ui.tabWidget->setCurrentIndex(0);
-	this->setFixedSize(600,536);
+	this->setFixedSize(550,550);
 	this->setWindowIcon(QIcon(":/DeviceConfig/Resources/LOGO.ico"));
+	lastWidget=0;
 	initMarkAddress();
 	initUIParam();
 	initConnect();
 	initConfig();
 	insertDevList();
 	AddList();
+	initRead();
+	initCameraParm();
+}
+
+
+DeviceConfig::~DeviceConfig()
+{
+	//initSave();
 }
 
 void DeviceConfig::initUIParam()
@@ -43,12 +52,12 @@ void DeviceConfig::initConnect()
 	connect(ui.btnFalut, SIGNAL(clicked()), this, SLOT(slots_defalut()));
 	connect(ui.btnExport, SIGNAL(clicked()), this, SLOT(slots_Export()));
 	connect(ui.tabWidget, SIGNAL(currentChanged(int)), this, SLOT(slots_showCameraIOInfo(int)));
-	connect(ui.listDevList, SIGNAL(currentRowChanged(int)), this, SLOT(slots_ChangeCameraIOData(int)));
-	connect(ui.btnioSave, SIGNAL(clicked()), this, SLOT(slots_CameraioSave()));
+	connect(ui.listDevList, SIGNAL(currentRowChanged(int)), this, SLOT(slots_ChangeCamera(int)));
+	connect(ui.btnioSave, SIGNAL(clicked()), this, SLOT(slots_CameraSave()));
 
 	connect(ui.btnRead,SIGNAL(clicked()),this,SLOT(slots_ReadConfig()));
 	connect(ui.pushButton,SIGNAL(clicked()),this,SLOT(slots_GetIniPath()));
-	connect(ui.pushButton_5,SIGNAL(clicked()),this,SLOT(slots_SetAll()));
+	connect(ui.Pb_Sync,SIGNAL(clicked()),this,SLOT(slots_SetAll()));
 	connect(ui.locklocation,SIGNAL(stateChanged(int)),this,SLOT(slots_Lock(int)));
 
 }
@@ -75,8 +84,29 @@ void DeviceConfig::initMarkAddress()
 	}
 	m_psetting.endGroup();
 }
+
+void DeviceConfig::initRead()
+{
+	ReadInit("Config/Config.ini");
+}
+
+
+void DeviceConfig::initCameraParm()
+{
+	QDir dir("config/");
+	QStringList list=dir.entryList();
+	ui.Cb_CameraParm->clear();
+	for( int i = 0; i < list.length(); i++ )    //打印目录文件
+	{
+		if(list[i].contains("CameraParm"))
+		{
+			ui.Cb_CameraParm->addItem(list[i]);
+		}
+	}
+}
+
 //切换设备配置
-void DeviceConfig::slots_ChangeCameraIOData(int temp)
+void DeviceConfig::slots_ChangeCamera(int temp)
 {
 	if (temp >= 0)
 	{
@@ -87,7 +117,15 @@ void DeviceConfig::slots_ChangeCameraIOData(int temp)
 		ui.LE_Station->setText(QString::number(nCameraIOInfo[temp].DeviceStation));
 		ui.LE_FirstTrigger->setText(QString::number(nCameraIOInfo[temp].DeviceFristTrigger));
 		ui.LE_SecondTrigger->setText(QString::number(nCameraIOInfo[temp].DeviceSecondTrigger));
-		ui.ledtInitFileName->setText(nCameraIOInfo[temp].DeviceInitFile);
+		for(int i=0;i<ui.Cb_CameraParm->count();i++)
+		{
+			if(nCameraIOInfo[temp].DeviceInitFile==ui.Cb_CameraParm->itemText(i))
+			{
+				ui.Cb_CameraParm->setCurrentIndex(i);
+				break;
+			}
+		}
+		//ui.ledtInitFileName->setText(nCameraIOInfo[temp].DeviceInitFile);
 		ui.ledtDevMark->setText(nCameraIOInfo[temp].DeviceMark);
 		ui.LE_Shuter->setText(QString::number(nCameraIOInfo[temp].DeviceShotTime));
 		ui.LE_Roangle->setText(QString::number(nCameraIOInfo[temp].DeviceRoAngle));
@@ -95,7 +133,9 @@ void DeviceConfig::slots_ChangeCameraIOData(int temp)
 		nCameraIOInfo[temp].DeviceName=="AVT"?ui.cbxCameraType->setCurrentIndex(1):ui.cbxCameraType->setCurrentIndex(0);
 		if(ui.comboBox_3->currentText().toInt()==4)
 			nCameraIOInfo[temp].ImageType==1?ui.cbxCameraType_2->setCurrentIndex(0):ui.cbxCameraType_2->setCurrentIndex(1);
-
+		Labels[temp]->setStyleSheet("color: rgb(255, 170, 0);");
+		Labels[lastWidget]->setStyleSheet("color: rgb(0, 0, 0);");
+		lastWidget=temp;
 		if(nCameraIOInfo[temp].DeviceType!=2)//细条纹相机配置不可变
 		{
 			ui.LE_FirstTrigger->setEnabled(true);
@@ -103,14 +143,12 @@ void DeviceConfig::slots_ChangeCameraIOData(int temp)
 			ui.LE_Roangle->setEnabled(true);
 			ui.LE_Shuter->setEnabled(true);
 			ui.LE_Station->setEnabled(true);
-			ui.ledtInitFileName->setEnabled(true);
+			ui.Cb_CameraParm->setEnabled(true);
 			ui.ledtDevMark->setEnabled(true);
 			ui.cbxCameraType->setEnabled(true);
 			//ui.LE_RealID->setEnabled(true);
 			ui.pushButton->setEnabled(true);
-			ui.pushButton_5->setEnabled(true);
-
-
+			ui.Pb_Sync->setEnabled(true);
 			if(nCameraIOInfo[temp].DeviceType==1&&!ui.locklocation->checkState())
 				ui.LE_ImageNum->setEnabled(true);
 			else
@@ -123,25 +161,29 @@ void DeviceConfig::slots_ChangeCameraIOData(int temp)
 			ui.LE_Roangle->setEnabled(false);
 			ui.LE_Shuter->setEnabled(false);
 			ui.LE_Station->setEnabled(false);
-			ui.ledtInitFileName->setEnabled(false);
+			ui.Cb_CameraParm->setEnabled(false);
 			ui.ledtDevMark->setEnabled(false);
 			ui.cbxCameraType->setEnabled(false);
 			//ui.LE_RealID->setEnabled(false);
 			ui.pushButton->setEnabled(false);
-			ui.pushButton_5->setEnabled(false);
+			ui.Pb_Sync->setEnabled(false);
 			ui.LE_ImageNum->setEnabled(false);
 		}
+		/*都不要啦*/
+		ui.ledtID->setEnabled(false);
+		ui.LE_RealID->setEnabled(false);
+		ui.LE_Station->setEnabled(false);
 	}
 }
 //保存当前设备配置
-void DeviceConfig::slots_CameraioSave()
+void DeviceConfig::slots_CameraSave()
 {
 	int temp=ui.comboBox_3->currentText().toInt();
 	int diff=0;
 	switch(temp)
 	{
 	case 12:nCurrentCamIO<6?diff=12:1;break;
-	case 15:
+	case 15:nCurrentCamIO<9?diff=15:1;break;
 	case 18:nCurrentCamIO<9?diff=18:1;break;
 	}
 	nCameraIOInfo[nCurrentCamIO].DeviceID = ui.ledtID->text().toInt();
@@ -150,7 +192,7 @@ void DeviceConfig::slots_CameraioSave()
 	nCameraIOInfo[nCurrentCamIO].DeviceFristTrigger = ui.LE_FirstTrigger->text().toInt();
 	nCameraIOInfo[nCurrentCamIO].DeviceSecondTrigger = ui.LE_SecondTrigger->text().toInt();
 	nCameraIOInfo[nCurrentCamIO].DeviceRoAngle = ui.LE_Roangle->text().toInt();
-	nCameraIOInfo[nCurrentCamIO].DeviceInitFile = ui.ledtInitFileName->text();
+	nCameraIOInfo[nCurrentCamIO].DeviceInitFile = ui.Cb_CameraParm->currentText();
 	nCameraIOInfo[nCurrentCamIO].DeviceMark = ui.ledtDevMark->text();
 	nCameraIOInfo[nCurrentCamIO].DeviceShotTime = ui.LE_Shuter->text().toInt();
 	nCameraIOInfo[nCurrentCamIO].DeviceName =ui.cbxCameraType->currentIndex()==0?"MER":"AVT";
@@ -168,7 +210,7 @@ void DeviceConfig::slots_CameraioSave()
 	nCameraIOInfo[nCurrentCamIO+diff].DeviceFristTrigger = ui.LE_FirstTrigger->text().toInt();
 	nCameraIOInfo[nCurrentCamIO+diff].DeviceSecondTrigger = ui.LE_SecondTrigger->text().toInt();
 	nCameraIOInfo[nCurrentCamIO+diff].DeviceRoAngle = ui.LE_Roangle->text().toInt();
-	nCameraIOInfo[nCurrentCamIO+diff].DeviceInitFile = ui.ledtInitFileName->text();
+	nCameraIOInfo[nCurrentCamIO+diff].DeviceInitFile = ui.Cb_CameraParm->currentText();
 	nCameraIOInfo[nCurrentCamIO+diff].DeviceMark = ui.ledtDevMark->text();
 	nCameraIOInfo[nCurrentCamIO+diff].DeviceShotTime = ui.LE_Shuter->text().toInt();
 	nCameraIOInfo[nCurrentCamIO+diff].DeviceName =ui.cbxCameraType->currentIndex()==0?"MER":"AVT";
@@ -178,90 +220,21 @@ void DeviceConfig::slots_CameraioSave()
 void DeviceConfig::slots_ReadConfig()
 {
 	QString path=QFileDialog::getOpenFileName(this,"Open","Config/");
-	QSettings m_psetting(path,QSettings::IniFormat);//设置路径
-	m_psetting.setIniCodec(QTextCodec::codecForName("UTF-8"));
-
-	//system
-	m_psetting.beginGroup("system");
-	if(m_psetting.contains("systemType"))//软件类型
-		ui.comboBox->setCurrentIndex(m_psetting.value("systemType").toInt()-1);
-	if(m_psetting.contains("iIOCardCount"))//IO卡数量
-		ui.comboBox_2->setCurrentIndex(m_psetting.value("iIOCardCount").toInt()-1);
-	if(m_psetting.contains("MinKickNumber"))//连续补踢报警
-		ui.spinBox->setValue(m_psetting.value("MinKickNumber").toInt());
-	if(m_psetting.contains("MaxKickNumber"))//连续累计报警
-		ui.spinBox_2->setValue(m_psetting.value("MaxKickNumber").toInt());
-	if(m_psetting.contains("isOLdPLC"))//一代机PLC
-		ui.IsOldPlc->setChecked(m_psetting.value("isOLdPLC").toInt());
-	if(m_psetting.contains("isUseIOCard"))//IO卡使能
-		ui.cbtIOCard->setChecked(m_psetting.value("isUseIOCard").toInt());
-	if(m_psetting.contains("NoKickIfNoFind"))//定位失败不剔除
-		ui.checkBox->setChecked(m_psetting.value("NoKickIfNoFind").toInt());
-	m_psetting.endGroup();
-
-	//GarbCardParameter
-	m_psetting.beginGroup("GarbCardParameter");
-	if(m_psetting.contains("DeviceNum"))//相机数量
-	{
-		int DeviceNum=m_psetting.value("DeviceNum").toInt();
-		bool DeviceNumError=false;
-		switch(DeviceNum)
-		{
-		case 4:ui.comboBox_3->setCurrentIndex(0);break;
-		case 12:ui.comboBox_3->setCurrentIndex(1);break;
-		case 15:ui.comboBox_3->setCurrentIndex(2);break;
-		case 18:ui.comboBox_3->setCurrentIndex(3);break;
-		default:DeviceNumError=true;break;
-		}
-		if(DeviceNumError)
-			return ;
-		for(int i=0;i<nCameraIOInfo.size();i++)
-		{
-			QString key=QString("Device%1").arg(i+1);
-			nCameraIOInfo[i].RealLineID=m_psetting.value(key+"RealLine").toInt();//相机真实序号
-			nCameraIOInfo[i].DeviceID=m_psetting.value(key+"ID").toInt();//相机序号
-			nCameraIOInfo[i].DeviceStation=m_psetting.value(key+"Station").toInt();//相机工位
-			nCameraIOInfo[i].DeviceFristTrigger=m_psetting.value(key+"FristTrigger").toInt();//第一次触发out口
-			nCameraIOInfo[i].DeviceSecondTrigger=m_psetting.value(key+"SecondTrigger").toInt();//第二次触发out口
-			nCameraIOInfo[i].DeviceMark=m_psetting.value(key+"Mark").toString();//MARK地址
-			nCameraIOInfo[i].DeviceInitFile=m_psetting.value(key+"InitFile").toString();//配置文件
-			nCameraIOInfo[i].DeviceName=m_psetting.value(key+"Name").toString();//相机名
-			nCameraIOInfo[i].DeviceImageNumber=m_psetting.value(key+"ImageNumber").toString().toInt();//对应图像号
-		}
-	}
-	else
-	{
-		m_psetting.endGroup();
-		return;
-	}
-	m_psetting.endGroup();
-
-	//RoAngle
-	m_psetting.beginGroup("RoAngle");
-		for(int i=0;i<nCameraIOInfo.size();i++)
-		{
-			QString key=QString("Device_%1").arg(i+1);
-			nCameraIOInfo[i].DeviceRoAngle=m_psetting.value(key).toInt();//旋转角度
-		}
-	m_psetting.endGroup();
-
-
-	slots_ChangeCameraIOData(0);
+	ReadInit(path);
 }
 //获取配置文件路径
 void DeviceConfig::slots_GetIniPath()
 {
-	QFileInfo path=QFileDialog::getOpenFileName(this,"Open","Config");
-	ui.ledtInitFileName->setText(path.fileName());
-	//设置路径
+	//QFileInfo path=QFileDialog::getOpenFileName(this,"Open","Config");
+	//ui.ledtInitFileName->setText(path.fileName());
+	initCameraParm();
 }
 //同步文件配置路径
 void DeviceConfig::slots_SetAll()
 {
 	for(int i=0;i<nCameraIOInfo.size();i++)
 	{
-		nCameraIOInfo[i].DeviceInitFile=ui.ledtInitFileName->text();
-
+		nCameraIOInfo[i].DeviceInitFile=ui.Cb_CameraParm->currentText();
 	}
 }
 //应力自定位
@@ -378,6 +351,16 @@ void DeviceConfig::insertDevList()
 		ui.label_14->show();
 		ui.LE_SecondTrigger->show();
 	}
+	for(int i=0;i<Widgets.size();i++)
+	{
+		auto w=Widgets[i];
+		auto l=Labels[i];
+		delete l;
+		delete w;
+	}
+	Widgets.clear();
+	Labels.clear();
+	lastWidget=0;
 	for (int i = 0; i < CameraNum; i++)
 	{
 		/*1:列表*/
@@ -390,9 +373,12 @@ void DeviceConfig::insertDevList()
 		{
 			ntemp.ImageType=1;
 		}
-		QWidget *widget1 = new QWidget(ui.listDevList);widgets.push_back(widget1);
-		QLabel *lab1 = new QLabel(widget1);labels.push_back(lab1);
-		lab1->setGeometry(0,0,widget1->width(),widget1->height());
+		QWidget *widget1 = new QWidget(ui.listDevList);
+		Widgets.push_back(widget1);
+		QLabel *lab1 = new QLabel(widget1);
+		Labels.push_back(lab1);
+
+		lab1->setGeometry(0,0,widget1->width(),widget1->height()-5);
 		lab1->setAlignment(Qt::AlignVCenter);
 		lab1->setText(tr("Camera")+QString::number(i + 1));
 		switch(temp)//添加颜色
@@ -559,6 +545,7 @@ void DeviceConfig::insertDevList()
 			}break;
 		default:break;
 		}
+		ntemp.DeviceInitFile=ui.Cb_CameraParm->count()?ui.Cb_CameraParm->currentText():"";
 		/*6:添加*/
 		nCameraIOInfo << ntemp;
 	}
@@ -590,6 +577,90 @@ void DeviceConfig::AddList()
 	}
 	ui.comboBox_4->addItems(nList);
 }
+
+void DeviceConfig::ReadInit(QString path)
+{
+	//QString path=QFileDialog::getOpenFileName(this,"Open","Config/");
+	QSettings m_psetting(path,QSettings::IniFormat);//设置路径
+	m_psetting.setIniCodec(QTextCodec::codecForName("UTF-8"));
+
+	//system
+	m_psetting.beginGroup("system");
+	if(m_psetting.contains("systemType"))//软件类型
+		ui.comboBox->setCurrentIndex(m_psetting.value("systemType").toInt()-1);
+	if(m_psetting.contains("iIOCardCount"))//IO卡数量
+		ui.comboBox_2->setCurrentIndex(m_psetting.value("iIOCardCount").toInt()-1);
+	if(m_psetting.contains("MinKickNumber"))//连续补踢报警
+		ui.spinBox->setValue(m_psetting.value("MinKickNumber").toInt());
+	if(m_psetting.contains("MaxKickNumber"))//连续累计报警
+		ui.spinBox_2->setValue(m_psetting.value("MaxKickNumber").toInt());
+	if(m_psetting.contains("isOLdPLC"))//一代机PLC
+		ui.IsOldPlc->setChecked(m_psetting.value("isOLdPLC").toInt());
+	if(m_psetting.contains("isUseIOCard"))//IO卡使能
+		ui.cbtIOCard->setChecked(m_psetting.value("isUseIOCard").toInt());
+	if(m_psetting.contains("NoKickIfNoFind"))//定位失败不剔除
+		ui.checkBox->setChecked(m_psetting.value("NoKickIfNoFind").toInt());
+	//waitme
+	m_psetting.endGroup();
+
+	//GarbCardParameter
+	m_psetting.beginGroup("GarbCardParameter");
+	if(m_psetting.contains("DeviceNum"))//相机数量
+	{
+		int DeviceNum=m_psetting.value("DeviceNum").toInt();
+		bool DeviceNumError=false;
+		switch(DeviceNum)
+		{
+		case 4:ui.comboBox_3->setCurrentIndex(0);break;
+		case 12:ui.comboBox_3->setCurrentIndex(1);break;
+		case 15:ui.comboBox_3->setCurrentIndex(2);break;
+		case 18:ui.comboBox_3->setCurrentIndex(3);break;
+		default:DeviceNumError=true;break;
+		}
+		if(DeviceNumError)
+			return ;
+		for(int i=0;i<nCameraIOInfo.size();i++)
+		{
+			QString key=QString("Device%1").arg(i+1);
+			nCameraIOInfo[i].RealLineID=m_psetting.value(key+"RealLine").toInt();//相机真实序号
+			nCameraIOInfo[i].DeviceID=m_psetting.value(key+"ID").toInt()+1;//相机序号
+			nCameraIOInfo[i].DeviceStation=m_psetting.value(key+"Station").toInt();//相机工位
+			nCameraIOInfo[i].DeviceFristTrigger=m_psetting.value(key+"FristTrigger").toInt();//第一次触发out口
+			nCameraIOInfo[i].DeviceSecondTrigger=m_psetting.value(key+"SecondTrigger").toInt();//第二次触发out口
+			nCameraIOInfo[i].DeviceMark=m_psetting.value(key+"Mark").toString();//MARK地址
+			nCameraIOInfo[i].DeviceInitFile=m_psetting.value(key+"InitFile").toString();//配置文件
+			nCameraIOInfo[i].DeviceName=m_psetting.value(key+"Name").toString();//相机名
+			nCameraIOInfo[i].DeviceImageNumber=m_psetting.value(key+"ImageNumber").toString().toInt();//对应图像号
+		}
+		m_psetting.endGroup();
+		if(DeviceNum==4)
+		{
+			for(int i=0;i<4;i++)
+			{
+				QString key=QString("ImageType/Device_%1").arg(i);
+				nCameraIOInfo[i].ImageType=m_psetting.value(key).toInt();
+			}
+		}
+	}
+	else
+	{
+		m_psetting.endGroup();
+		return;
+	}
+
+	//RoAngle
+	m_psetting.beginGroup("RoAngle");
+	for(int i=0;i<nCameraIOInfo.size();i++)
+	{
+		QString key=QString("Device_%1").arg(i+1);
+		nCameraIOInfo[i].DeviceRoAngle=m_psetting.value(key).toInt();//旋转角度
+	}
+	m_psetting.endGroup();
+	
+
+	slots_ChangeCamera(0);
+}
+
 void DeviceConfig::slots_addKicklist()
 {
 	if (ui.checkBox->isChecked())
@@ -700,7 +771,7 @@ void DeviceConfig::slots_defalut()
 		nCameraIOInfo[i].DeviceInitFile = QString("CameraParm1.ini");
 		//nCameraIOInfo[i].DeviceShotTime = 200;
 	}
-	slots_ChangeCameraIOData(0);
+	slots_ChangeCamera(0);
 	//if (nCount <= 4)
 	//{
 	//	CameraClampSet(nCount);
@@ -757,6 +828,7 @@ void DeviceConfig::slots_Export()
 	PathConfig.setValue("/system/MinKickNumber", ui.spinBox->text().toInt());
 	PathConfig.setValue("/system/MaxKickNumber", ui.spinBox_2->text().toInt());
 	PathConfig.setValue("/system/bCreateApp", 0);
+
 	PathConfig.setValue("/system/Test", 0);
 	PathConfig.setValue("/system/SaveNormalErrorImageByTime", 0);
 	PathConfig.setValue("/system/SaveStressErrorImageByTime", 0);
@@ -803,7 +875,7 @@ void DeviceConfig::slots_Export()
 		PathConfig.setValue(QString("/GarbCardParameter/Device%1Station").arg(i + 1), nCameraIOInfo[i].DeviceStation);
 		PathConfig.setValue(QString("/GarbCardParameter/Device%1FristTrigger").arg(i + 1), nCameraIOInfo[i].DeviceFristTrigger);
 		PathConfig.setValue(QString("/GarbCardParameter/Device%1SecondTrigger").arg(i + 1), nCameraIOInfo[i].DeviceSecondTrigger);
-		//PathConfig.setValue(QString("/GarbCardParameter/Device%1ImageNumber").arg(i + 1), nCameraIOInfo[i].DeviceImageNumber);
+		PathConfig.setValue(QString("/GarbCardParameter/Device%1ImageNumber").arg(i + 1), nCameraIOInfo[i].DeviceImageNumber);
 		PathConfig.setValue(QString("/RoAngle/Device_%1").arg(i + 1), nCameraIOInfo[i].DeviceRoAngle);
 		PathConfig.setValue(QString("/ImageType/Device_%1").arg(i), nCameraIOInfo[i].ImageType);
 	}

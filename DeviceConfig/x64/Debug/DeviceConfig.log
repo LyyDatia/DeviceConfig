@@ -1,4 +1,4 @@
-﻿生成启动时间为 2022/9/30 10:55:00。
+﻿生成启动时间为 2022/12/5 14:24:23。
      1>项目“E:\DeviceConfig\DeviceConfig\DeviceConfig.vcxproj”在节点 2 上(build 个目标)。
      1>InitializeBuildStatus:
          正在创建“x64\Debug\DeviceConfig.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
@@ -19,4 +19,4 @@
 
 生成成功。
 
-已用时间 00:00:00.16
+已用时间 00:00:00.08

@@ -13,11 +13,14 @@ class DeviceConfig : public QMainWindow
 
 public:
     DeviceConfig(QWidget *parent = 0);
+	~DeviceConfig();
 public:
 	void initUIParam();
 	void initConfig();
 	void initConnect();
-	void initMarkAddress();
+	void initMarkAddress();	//初始化mark地址
+	void initRead();		//初始化读取上次配置
+	void initCameraParm();	//初始化读取配置文件
 	void writeConfig(QString,QString);
 	void insertDevList();
 	void CameraClampSet(int);
@@ -25,25 +28,26 @@ public:
 	void FindModeInfo();
 
 	void AddList();
+	void ReadInit(QString path);
 public slots:
 	void slots_SaveMode3Changed(int);
 	void slots_addKicklist();
-	void slots_defalut();
-	void slots_Export();
+	void slots_defalut();//默认配置
+	void slots_Export();//导出
 	void slots_showCameraIOInfo(int);
-	void slots_ChangeCameraIOData(int);
-	void slots_CameraioSave();
-
+	void slots_ChangeCamera(int);
+	void slots_CameraSave();
 	void slots_ReadConfig();
-	void slots_GetIniPath();
+	void slots_GetIniPath();//读取配置文件
 	void slots_SetAll();
 	void slots_Lock(int);//应力自定位
 private:
     Ui::UIDevicesConfig ui;
 public:
-	QVector<QLabel*>labels;
-	QVector<QWidget*>widgets;
 	QVector<QString>MarkAddress;
+	QVector<QLabel*>Labels;
+	QVector<QWidget*>Widgets;
+	int lastWidget;//用于指向上一个点击的widget
 
 	s_ConfigPathInfo m_sConfigPathInfo;
 	s_nSystemCfgInfo m_sSystemInfo;
