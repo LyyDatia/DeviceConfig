@@ -600,7 +600,15 @@ void DeviceConfig::ReadInit(QString path)
 		ui.cbtIOCard->setChecked(m_psetting.value("isUseIOCard").toInt());
 	if(m_psetting.contains("NoKickIfNoFind"))//定位失败不剔除
 		ui.checkBox->setChecked(m_psetting.value("NoKickIfNoFind").toInt());
-	//waitme
+	//if(m_psetting.contains("LastModelName"))
+	//{
+	//	QSettings m_psetting(QString("ModeInfo/%1/GrabInfo.ini").arg(m_psetting.value("NoKickIfNoFind").toString()),QSettings::IniFormat);//设置路径
+	//	m_psetting.setIniCodec(QTextCodec::codecForName("UTF-8"));
+	//	for(int i=0;i<nCameraIOInfo.size();i++)
+	//	{
+
+	//	}
+	//}
 	m_psetting.endGroup();
 
 	//GarbCardParameter
@@ -630,7 +638,7 @@ void DeviceConfig::ReadInit(QString path)
 			nCameraIOInfo[i].DeviceMark=m_psetting.value(key+"Mark").toString();//MARK地址
 			nCameraIOInfo[i].DeviceInitFile=m_psetting.value(key+"InitFile").toString();//配置文件
 			nCameraIOInfo[i].DeviceName=m_psetting.value(key+"Name").toString();//相机名
-			nCameraIOInfo[i].DeviceImageNumber=m_psetting.value(key+"ImageNumber").toString().toInt();//对应图像号
+			//nCameraIOInfo[i].DeviceImageNumber=m_psetting.value(key+"ImageNumber").toString().toInt();//对应图像号
 		}
 		m_psetting.endGroup();
 		if(DeviceNum==4)
@@ -879,7 +887,6 @@ void DeviceConfig::slots_Export()
 		PathConfig.setValue(QString("/RoAngle/Device_%1").arg(i + 1), nCameraIOInfo[i].DeviceRoAngle);
 		PathConfig.setValue(QString("/ImageType/Device_%1").arg(i), nCameraIOInfo[i].ImageType);
 	}
-
 	//GrabInfo
 	QString ModeInfo = m_sConfigPathInfo.m_strModeInfoPath + "/" + ui.comboBox_5->currentText() + "/GrabInfo.ini";
 	QSettings ModeInfoConfig(ModeInfo, QSettings::IniFormat);
@@ -971,62 +978,4 @@ void DeviceConfig::slots_Export()
 	}
 
 	QMessageBox::information(this, tr("message"), tr("Export: succed!"));
-	return;
-	//应力对应的正常相机
-	if (nCameraCount <= 4)
-	{
-		ModeInfoConfig.setValue(QString("/Stress/Device_0"), 0);//tonormal
-		ModeInfoConfig.setValue(QString("/Stress/Device_1"), 0);
-		ModeInfoConfig.setValue(QString("/Stress/Device_2"), 1);
-		ModeInfoConfig.setValue(QString("/Stress/Device_3"), 0);
-
-		ModeInfoConfig.setValue(QString("/tonormal/Grab_0"), 0);
-		ModeInfoConfig.setValue(QString("/tonormal/Grab_1"), 1);
-		ModeInfoConfig.setValue(QString("/tonormal/Grab_2"), 2);
-		ModeInfoConfig.setValue(QString("/tonormal/Grab_3"), 3);
-
-		ModeInfoConfig.setValue(QString("/convert/Grab_0"), 0);
-		ModeInfoConfig.setValue(QString("/convert/Grab_1"), 1);
-		ModeInfoConfig.setValue(QString("/convert/Grab_2"), 2);
-		ModeInfoConfig.setValue(QString("/convert/Grab_3"), 3);
-	}
-	else {
-		//对应真实相机convert  应力对应的正常相机tonormal
-		for (int i = 0; i < nFictitiouCamCount; i++)
-		{
-			int nTonormal = i;
-			if (nTonormal >= nCameraCount)
-			{
-				nTonormal = nTonormal - nCameraCount;
-			}
-			ModeInfoConfig.setValue(QString("/tonormal/Grab_%1").arg(i), nTonormal);
-			ModeInfoConfig.setValue(QString("/convert/Grab_%1").arg(i), nTonormal);
-			ModeInfoConfig.setValue(QString("/Stress/Device_%1").arg(i), 0);
-		}
-		if (nCameraCount == 12)
-		{
-			for (int i = 6; i < nFictitiouCamCount; i++)
-			{
-				ModeInfoConfig.setValue(QString("/tonormal/Grab_%1").arg(i), i-6);
-				ModeInfoConfig.setValue(QString("/Stress/Device_%1").arg(i), 1);
-			}
-		}
-		else if (nCameraCount == 15)
-		{
-			for (int i = 9; i < 15; i++)
-			{
-				ModeInfoConfig.setValue(QString("/tonormal/Grab_%1").arg(i), i - 9);
-				ModeInfoConfig.setValue(QString("/Stress/Device_%1").arg(i), 1);
-			}
-		}
-		else if (nCameraCount == 18)
-		{
-			for (int i = 9; i < 18; i++)
-			{
-				ModeInfoConfig.setValue(QString("/tonormal/Grab_%1").arg(i), i - 9);
-				ModeInfoConfig.setValue(QString("/Stress/Device_%1").arg(i), 1);
-			}
-		}
-	}
-
 }
