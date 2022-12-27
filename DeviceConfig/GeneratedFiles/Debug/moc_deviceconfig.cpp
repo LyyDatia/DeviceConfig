@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'deviceconfig.h'
 **
-** Created: Tue Nov 22 09:39:18 2022
+** Created: Fri Dec 9 09:54:15 2022
 **      by: The Qt Meta Object Compiler version 63 (Qt 4.8.2)
 **
 ** WARNING! All changes made in this file will be lost!

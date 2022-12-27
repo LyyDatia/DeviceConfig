@@ -16,8 +16,8 @@ DeviceConfig::DeviceConfig(QWidget *parent)
 	initConfig();
 	insertDevList();
 	AddList();
-	initRead();
 	initCameraParm();
+	initRead();
 }
 
 
@@ -669,6 +669,36 @@ void DeviceConfig::ReadInit(QString path)
 	slots_ChangeCamera(0);
 }
 
+void DeviceConfig::ClippingFrame(QSettings &ModeInfoConfig)//1209
+{
+	QString path;
+	int width,height;
+	for(int i=0;i<nCameraIOInfo.size();i++)
+	{
+		path="Config/"+nCameraIOInfo[i].DeviceInitFile;
+		QSettings m_psetting(path,QSettings::IniFormat);//ÉèÖÃÂ·¾¶
+		if(m_psetting.contains("Camera/Width"))
+		{
+			width=m_psetting.value("Camera/Width").toInt();
+			ModeInfoConfig.setValue(QString("pointx/Grab_%1").arg(i),width-200);
+		}
+		else
+		{
+			ModeInfoConfig.setValue(QString("pointx/Grab_%1").arg(i),width-200);
+		}
+
+		if(m_psetting.contains("Camera/Height"))
+		{
+			height=m_psetting.value("Camera/Height").toInt();
+			ModeInfoConfig.setValue(QString("pointy/Grab_%1").arg(i),height-200);
+		}
+		else
+		{
+			ModeInfoConfig.setValue(QString("pointy/Grab_%1").arg(i),height-200);
+		}
+	}
+}
+
 void DeviceConfig::slots_addKicklist()
 {
 	if (ui.checkBox->isChecked())
@@ -891,6 +921,7 @@ void DeviceConfig::slots_Export()
 	QString ModeInfo = m_sConfigPathInfo.m_strModeInfoPath + "/" + ui.comboBox_5->currentText() + "/GrabInfo.ini";
 	QSettings ModeInfoConfig(ModeInfo, QSettings::IniFormat);
 	ModeInfoConfig.setIniCodec(QTextCodec::codecForName("GBK"));
+	ClippingFrame(ModeInfoConfig);
 	QFile file_2(ModeInfo);
 	if(file_2.exists())
 	{

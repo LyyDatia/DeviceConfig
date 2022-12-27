@@ -29,6 +29,7 @@ public:
 
 	void AddList();
 	void ReadInit(QString path);
+	void ClippingFrame(QSettings&);
 public slots:
 	void slots_SaveMode3Changed(int);
 	void slots_addKicklist();
